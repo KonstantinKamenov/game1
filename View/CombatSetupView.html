@@ -1,0 +1,133 @@
+<html>
+<head>
+<link rel="stylesheet" type="text/css" href="View/test_style.css">
+<script src="../jquery-3.5.1.js"></script>
+<script type="text/javascript">
+		var enemies;
+		$(document).ready(function(){
+			$.get("index.php/?target=CombatSetup&action=loadEnemies",function(data){
+				enemies=JSON.parse(data).enemies;
+				for(var i=0;i<enemies.length;i++){
+					console.log(enemies[i].enemy_id);
+					$("#enemy_list").append("<td onclick='changeCurrentlySelectedEnemy("+(i+1)+")' class='selector enemy_selector'>"+enemies[i].name+"</td>");
+				}
+			});
+		});
+    	var arrEnemy=[];
+    	var arrFriendly=[];
+    	var selectedEnemy=0, selectedEnemyName='',selectedCharacter=1, selectedCharacterName='character 1';
+    		for(var x=0;x<4;x++){
+    		arrEnemy[x]=[];
+    		arrFriendly[x]=[];
+    		for(var y=0;y<4;y++){
+    			arrEnemy[x][y]=0;
+    			arrFriendly[x][y]=0;
+    		}
+    	}
+    	function makeSetup(){
+    		var setupText=document.getElementById('setup')
+    		setupText.value=JSON.stringify(arrEnemy)+'|'+JSON.stringify(arrFriendly)
+    	}
+    	function changeCurrentlySelectedEnemy(ind){
+    		var enemySelectors=document.getElementsByClassName("enemy_selector")
+    		enemySelectors[selectedEnemy].className="selector enemy_selector"
+    		selectedEnemy=ind-1
+    		selectedEnemyName=enemySelectors[ind].innerHTML
+    		enemySelectors[ind].className="selector_selected enemy_selector"
+    	}
+    	function changeCurrentlySelectedCharacter(ind){
+    		var friendlySelectors=document.getElementsByClassName("friendly_selector")
+    		friendlySelectors[selectedCharacter-1].className="selector friendly_selector"
+    		selectedCharacter=ind
+    		selectedCharacterName=friendlySelectors[ind-1].innerHTML
+    		friendlySelectors[ind-1].className="selector_selected friendly_selector"
+    	}
+    	function placeEnemy(x,y){
+    		console.log(selectedEnemy);
+    		arrEnemy[x][y]=enemies[selectedEnemy].enemy_id;
+    		var enemyFields=document.getElementsByClassName('enemy_field');
+    		enemyFields[x+y*4].innerHTML=selectedEnemyName;
+    	}
+    	function placeCharacter(x,y){
+    		var friendlyFields=document.getElementsByClassName('friendly_field')
+    		for(var i=0;i<friendlyFields.length;i++){
+    			//console.log(i+
+    			if(friendlyFields[i].innerHTML==selectedCharacterName){
+    				friendlyFields[i].innerHTML=''
+    				arrFriendly[i%4][i/4]=0
+    			}
+    		}
+    		friendlyFields[x+y*4].innerHTML=selectedCharacterName
+    		arrFriendly[x][y]=selectedCharacter
+    	}
+    </script>
+</head>
+<body>
+<table>
+	<tr>
+		<td onclick='changeCurrentlySelectedCharacter(1)' class='selector_selected friendly_selector'>character 1</td>
+	</tr>
+	</table> 
+	<table>
+		<tr>
+			<td onclick='placeCharacter(0,0)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(1,0)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(2,0)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(3,0)' class='field friendly_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeCharacter(0,1)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(1,1)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(2,1)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(3,1)' class='field friendly_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeCharacter(0,2)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(1,2)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(2,2)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(3,2)' class='field friendly_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeCharacter(0,3)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(1,3)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(2,3)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(3,3)' class='field friendly_field'></td>
+		</tr>
+	</table>
+	<table>
+	<tr id='enemy_list'>
+		<td onclick='changeCurrentlySelectedEnemy(0)' class='selector_selected enemy_selector'></td>
+	</tr>
+	</table> 
+	<table>
+		<tr>
+			<td onclick='placeEnemy(0,0)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(1,0)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(2,0)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(3,0)' class='field enemy_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeEnemy(0,1)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(1,1)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(2,1)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(3,1)' class='field enemy_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeEnemy(0,2)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(1,2)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(2,2)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(3,2)' class='field enemy_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeEnemy(0,3)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(1,3)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(2,3)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(3,3)' class='field enemy_field'></td>
+		</tr>
+	</table>
+	<form name="form" action="page2.php" method="POST" onsubmit="makeSetup()">
+		<input type="text" id="setup" name="text" hidden="true"> <input
+			type="submit" value="Fight">
+	</form>
+</body>
+</html>
