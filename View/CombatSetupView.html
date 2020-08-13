@@ -1,9 +1,10 @@
 <html>
 <head>
 <link rel="stylesheet" type="text/css" href="View/test_style.css">
-<script src="../jquery-3.5.1.js"></script>
+<script src="jquery-3.5.1.js"></script>
 <script type="text/javascript">
 		var enemies;
+		var characters;
 		$(document).ready(function(){
 			$.get("index.php/?target=CombatSetup&action=loadEnemies",function(data){
 				enemies=JSON.parse(data).enemies;
@@ -12,10 +13,17 @@
 					$("#enemy_list").append("<td onclick='changeCurrentlySelectedEnemy("+(i+1)+")' class='selector enemy_selector'>"+enemies[i].name+"</td>");
 				}
 			});
+			$.get("index.php/?target=CombatSetup&action=loadCharacters",function(data){
+				characters=JSON.parse(data).characters;
+				for(var i=0;i<characters.length;i++){
+					//console.log(enemies[i].enemy_id);
+					$("#character_list").append("<td onclick='changeCurrentlySelectedCharacter("+(i+1)+")' class='selector friendly_selector'>"+characters[i].name+"</td>");
+				}
+			});
 		});
     	var arrEnemy=[];
     	var arrFriendly=[];
-    	var selectedEnemy=0, selectedEnemyName='',selectedCharacter=1, selectedCharacterName='character 1';
+    	var selectedEnemy=0, selectedEnemyName='',selectedCharacter=0, selectedCharacterName='';
     		for(var x=0;x<4;x++){
     		arrEnemy[x]=[];
     		arrFriendly[x]=[];
@@ -31,24 +39,33 @@
     	function changeCurrentlySelectedEnemy(ind){
     		var enemySelectors=document.getElementsByClassName("enemy_selector")
     		enemySelectors[selectedEnemy].className="selector enemy_selector"
-    		selectedEnemy=ind-1
+    		selectedEnemy=ind
     		selectedEnemyName=enemySelectors[ind].innerHTML
     		enemySelectors[ind].className="selector_selected enemy_selector"
     	}
     	function changeCurrentlySelectedCharacter(ind){
     		var friendlySelectors=document.getElementsByClassName("friendly_selector")
-    		friendlySelectors[selectedCharacter-1].className="selector friendly_selector"
+    		if(selectedCharacter!=0){
+    			friendlySelectors[selectedCharacter-1].className="selector friendly_selector"
+    		}
     		selectedCharacter=ind
     		selectedCharacterName=friendlySelectors[ind-1].innerHTML
     		friendlySelectors[ind-1].className="selector_selected friendly_selector"
     	}
     	function placeEnemy(x,y){
     		console.log(selectedEnemy);
-    		arrEnemy[x][y]=enemies[selectedEnemy].enemy_id;
+    		if(selectedEnemy==0){
+    		arrEnemy[x][y]=0;
+    		}else{    		
+    			arrEnemy[x][y]=enemies[selectedEnemy-1].enemy_id;
+    		}
     		var enemyFields=document.getElementsByClassName('enemy_field');
     		enemyFields[x+y*4].innerHTML=selectedEnemyName;
     	}
     	function placeCharacter(x,y){
+    		if(selectedCharacter==0){
+    			return;
+    		}
     		var friendlyFields=document.getElementsByClassName('friendly_field')
     		for(var i=0;i<friendlyFields.length;i++){
     			//console.log(i+
@@ -58,16 +75,18 @@
     			}
     		}
     		friendlyFields[x+y*4].innerHTML=selectedCharacterName
-    		arrFriendly[x][y]=selectedCharacter
+    		arrFriendly[x][y]=characters[selectedCharacter-1].character_id;
     	}
     </script>
 </head>
 <body>
-<table>
-	<tr>
-		<td onclick='changeCurrentlySelectedCharacter(1)' class='selector_selected friendly_selector'>character 1</td>
-	</tr>
-	</table> 
+	<a href="?target=CharacterCreate&action=home"><input type="button"
+		value="Create new character" /></a>
+	<table>
+		<tr id='character_list'>
+
+		</tr>
+	</table>
 	<table>
 		<tr>
 			<td onclick='placeCharacter(0,0)' class='field friendly_field'></td>
@@ -94,11 +113,7 @@
 			<td onclick='placeCharacter(3,3)' class='field friendly_field'></td>
 		</tr>
 	</table>
-	<table>
-	<tr id='enemy_list'>
-		<td onclick='changeCurrentlySelectedEnemy(0)' class='selector_selected enemy_selector'></td>
-	</tr>
-	</table> 
+	<br/>
 	<table>
 		<tr>
 			<td onclick='placeEnemy(0,0)' class='field enemy_field'></td>
@@ -125,7 +140,14 @@
 			<td onclick='placeEnemy(3,3)' class='field enemy_field'></td>
 		</tr>
 	</table>
-	<form name="form" action="page2.php" method="POST" onsubmit="makeSetup()">
+	<table>
+		<tr id='enemy_list'>
+			<td onclick='changeCurrentlySelectedEnemy(0)'
+				class='selector_selected enemy_selector'></td>
+		</tr>
+	</table>
+	<form name="form" action="page2.php" method="POST"
+		onsubmit="makeSetup()">
 		<input type="text" id="setup" name="text" hidden="true"> <input
 			type="submit" value="Fight">
 	</form>
