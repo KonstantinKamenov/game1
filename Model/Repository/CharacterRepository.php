@@ -37,6 +37,17 @@ class CharacterRepository{
         $result = $statement->fetchAll();
         return $result;
     }
+    public function getCharacterByID($character_id){
+        $conn = DBManager::getInstance()->getConnection();
+        $query = 'SELECT *
+                    FROM `characters`
+                    WHERE `character_id` = :character_id';
+        $statement = $conn->prepare($query);
+        $statement->execute(['character_id'=>$character_id]);
+        
+        $result = $statement->fetchAll();
+        return $result;
+    }
     public function addCharacter($user_id,$name,$class){
         $template = $this->getClass($class)[0];
         

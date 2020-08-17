@@ -9,7 +9,7 @@ class CombatSetupController
 {
     public function home()
     {
-        echo file_get_contents("View/CombatSetupView.html");
+        echo require("View/CombatSetupView.html");
     }
     public function loadEnemies(){
         $service = new EnemyService();
