@@ -24,10 +24,10 @@
     	var arrEnemy=[];
     	var arrFriendly=[];
     	var selectedEnemy=0, selectedEnemyName='',selectedCharacter=0, selectedCharacterName='';
-    		for(var x=0;x<4;x++){
+    		for(var x=0;x<5;x++){
     		arrEnemy[x]=[];
     		arrFriendly[x]=[];
-    		for(var y=0;y<4;y++){
+    		for(var y=0;y<5;y++){
     			arrEnemy[x][y]=0;
     			arrFriendly[x][y]=0;
     		}
@@ -56,34 +56,34 @@
     	}
     	function placeEnemy(x,y){
     		console.log(selectedEnemy);
-    		if(selectedEnemy==0){
-    		arrEnemy[x][y]=0;
-    		}else{    		
-    			arrEnemy[x][y]=enemies[selectedEnemy-1].enemy_id;
+    		if(selectedEnemy == 0){
+    			arrEnemy[x][y] = 0;
+    		} else {    		
+    			arrEnemy[x][y] = enemies[selectedEnemy-1].enemy_id;
     		}
-    		var enemyFields=document.getElementsByClassName('enemy_field');
-    		enemyFields[x+y*4].innerHTML=selectedEnemyName;
+    		var enemyFields = document.getElementsByClassName('enemy_field');
+    		enemyFields[x+y*5].innerHTML = selectedEnemyName;
     	}
     	function placeCharacter(x,y){
     		if(selectedCharacter==0){
     			return;
     		}
     		var friendlyFields=document.getElementsByClassName('friendly_field')
-    		for(var i=0;i<friendlyFields.length;i++){
+    		for(var i=0; i < friendlyFields.length; i++){
     			//console.log(i+
     			if(friendlyFields[i].innerHTML==selectedCharacterName){
     				console.log(i);
     				friendlyFields[i].innerHTML=''
-    				arrFriendly[i%4][Math.floor(i/4)]=0
+    				arrFriendly[i%5][Math.floor(i/5)]=0
     			}
     		}
-    		friendlyFields[x+y*4].innerHTML=selectedCharacterName
+    		friendlyFields[x+y*5].innerHTML=selectedCharacterName
     		arrFriendly[x][y]=characters[selectedCharacter-1].character_id;
     	}
     </script>
 </head>
 <body>
-	<a href="?target=CharacterCreate&action=home"><input type="button"
+	<a href="index.php?target=CharacterCreate&action=home"><input type="button"
 		value="Create new character" /></a>
 	<table>
 		<tr id='character_list'>
@@ -96,24 +96,35 @@
 			<td onclick='placeCharacter(1,0)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(2,0)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(3,0)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(4,0)' class='field friendly_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeCharacter(0,1)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(1,1)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(2,1)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(3,1)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(4,1)' class='field friendly_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeCharacter(0,2)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(1,2)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(2,2)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(3,2)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(4,2)' class='field friendly_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeCharacter(0,3)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(1,3)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(2,3)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(3,3)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(4,3)' class='field friendly_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeCharacter(0,4)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(1,4)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(2,4)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(3,4)' class='field friendly_field'></td>
+			<td onclick='placeCharacter(4,4)' class='field friendly_field'></td>
 		</tr>
 	</table>
 	<br />
@@ -123,24 +134,35 @@
 			<td onclick='placeEnemy(1,0)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(2,0)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(3,0)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(4,0)' class='field enemy_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeEnemy(0,1)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(1,1)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(2,1)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(3,1)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(4,1)' class='field enemy_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeEnemy(0,2)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(1,2)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(2,2)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(3,2)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(4,2)' class='field enemy_field'></td>
 		</tr>
 		<tr>
 			<td onclick='placeEnemy(0,3)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(1,3)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(2,3)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(3,3)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(4,3)' class='field enemy_field'></td>
+		</tr>
+		<tr>
+			<td onclick='placeEnemy(0,4)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(1,4)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(2,4)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(3,4)' class='field enemy_field'></td>
+			<td onclick='placeEnemy(4,4)' class='field enemy_field'></td>
 		</tr>
 	</table>
 	<table>
