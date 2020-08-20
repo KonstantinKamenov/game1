@@ -8,6 +8,16 @@ use Model\Repository\CombatRepository;
 class CombatService
 {
 
+    const MAX_WIDTH = 5;
+
+    const MAX_HEIGHT = 5;
+
+    const TARGET_TYPE_ENEMY = "enemy";
+
+    const TARGET_TYPE_ENEMY_ANY = "enemy_any";
+
+    const TARGET_TYPE_FRIENDLY_FREE = "free_friendly";
+
     public function initCombat($characters, $enemies)
     {
         $characterField = json_decode($characters);
@@ -15,10 +25,10 @@ class CombatService
         $characterRepo = new CharacterRepository();
         $enemyRepo = new EnemyRepository();
         $cnt = 0;
-        for ($y = 0; $y < 5; $y ++) {
-            for ($x = 0; $x < 5; $x ++) {
+        for ($y = 0; $y < self::MAX_HEIGHT; $y ++) {
+            for ($x = 0; $x < self::MAX_WIDTH; $x ++) {
                 if ($characterField[$x][$y] != 0) {
-                    $loadedCharacters[$cnt] = $characterRepo->getCharacterByID($characterField[$x][$y])[0];
+                    $loadedCharacters[$cnt] = $characterRepo->getCharacterByID($characterField[$x][$y]);
                     $loadedCharacters[$cnt]['x'] = $x;
                     $loadedCharacters[$cnt]['y'] = $y;
                     $loadedCharacters[$cnt]['id'] = $cnt + 1;
@@ -28,10 +38,10 @@ class CombatService
         }
         $charCnt = $cnt;
         $cnt = 0;
-        for ($y = 0; $y < 5; $y ++) {
-            for ($x = 0; $x < 5; $x ++) {
+        for ($y = 0; $y < self::MAX_HEIGHT; $y ++) {
+            for ($x = 0; $x < self::MAX_WIDTH; $x ++) {
                 if ($enemyField[$x][$y] != 0) {
-                    $loadedEnemies[$cnt] = $enemyRepo->getEnemyByID($enemyField[$x][$y])[0];
+                    $loadedEnemies[$cnt] = $enemyRepo->getEnemyByID($enemyField[$x][$y]);
                     $loadedEnemies[$cnt]['id'] = $cnt + $charCnt + 1;
                     $loadedEnemies[$cnt]['x'] = $x;
                     $loadedEnemies[$cnt]['y'] = $y;
@@ -44,7 +54,7 @@ class CombatService
             $turn_order[] = $i;
         }
         shuffle($turn_order);
-        $user_id = $_COOKIE['user_id'];
+        $user_id = $_SESSION['user_id'];
         if ($combatRepo->getCombatByUserID($user_id)) {
             $combatRepo->deleteCombatByUserID($user_id);
         }
@@ -56,7 +66,7 @@ class CombatService
     public function getState()
     {
         $repo = new CombatRepository();
-        $state = $repo->getCombatByUserID($_COOKIE['user_id'])[0];
+        $state = $repo->getCombatByUserID($_SESSION['user_id']);
         // var_dump($state);
         return $state;
     }
@@ -145,11 +155,11 @@ class CombatService
         ];
         $repo = new CombatRepository();
         $spell = $repo->getSpellByID($spell_id);
-        $combat = $repo->getCombatByUserID($_COOKIE['user_id'])[0];
+        $combat = $repo->getCombatByUserID($_SESSION['user_id']);
         $all[0] = json_decode($combat['characters'], true);
         $all[1] = json_decode($combat['enemies'], true);
-        $placement[0] = array_fill(0, 5, array_fill(0, 5, 0));
-        $placement[1] = array_fill(0, 5, array_fill(0, 5, 0));
+        $placement[0] = array_fill(0, self::MAX_HEIGHT, array_fill(0, self::MAX_WIDTH, 0));
+        $placement[1] = array_fill(0, self::MAX_HEIGHT, array_fill(0, self::MAX_WIDTH, 0));
         $turn = json_decode($combat['turn_order'])[$combat['turn']];
         if ($turn > count($all[0])) {
             $turn -= count($all[0]);
@@ -161,46 +171,46 @@ class CombatService
             $placement[1][$enemy['x']][$enemy['y']] = $enemy['id'] - count($all[0]);
         }
         // var_dump($charPlacement);
-        if ($spell['target_type'] == 'enemy') {
+        if ($spell['target_type'] == self::TARGET_TYPE_ENEMY) {
             if ($field == $side || $placement[$field][$x][$y] == 0) {
                 return $result;
             }
         }
-        if ($spell['target_type'] == 'enemy_any') {
+        if ($spell['target_type'] == self::TARGET_TYPE_ENEMY_ANY) {
             if ($field == $side) {
                 return $result;
             }
         }
-        if ($spell['target_type'] == 'free_friendly') {
+        if ($spell['target_type'] == self::TARGET_TYPE_FRIENDLY_FREE) {
             if ($field != $side || $placement[$field][$x][$y] != 0) {
                 return $result;
             }
         }
-        if ($spell['spell_type'] == 'movement') {
+        if ($spell['spell_type']== 'movement') {
             $all[$side][$turn - 1]['x'] = ($x + 0);
             $all[$side][$turn - 1]['y'] = ($y + 0);
         }
-        if ($spell['spell_type'] == 'damage') {
+        if ($spell['spell_type']== 'damage') {
             $all[$field][$placement[$field][$x][$y] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
         }
         if ($spell['spell_type'] == 'damage_row') {
-            for ($tx = 0; $tx < 5; $tx ++) {
-                if ($placement[$field][$tx][$y] != 0) {
-                    $all[$field][$placement[$field][$tx][$y] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
+            for ($ty = 0; $ty < self::MAX_HEIGHT; $ty ++) {
+                if ($placement[$field][$x][$ty] != 0) {
+                    $all[$field][$placement[$field][$x][$ty] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
                 }
             }
         }
 
-        $repo->updateCombat($_COOKIE['user_id'], json_encode($all[0]), json_encode($all[1]), $combat['turn_order'], $combat['turn']);
+        $repo->updateCombat($_SESSION['user_id'], json_encode($all[0]), json_encode($all[1]), $combat['turn_order'], $combat['turn']);
         $nextTurn = $this->advanceTurn();
-        $repo->changeTurn($_COOKIE['user_id'], $nextTurn);
+        $repo->changeTurn($_SESSION['user_id'], $nextTurn);
         return $result;
     }
 
     public function enemyTurn()
     {
         $repo = new CombatRepository();
-        $combat = $repo->getCombatByUserID($_COOKIE['user_id'])[0];
+        $combat = $repo->getCombatByUserID($_SESSION['user_id']);
         $characters = json_decode($combat['characters'], true);
         $enemies = json_decode($combat['enemies'], true);
         foreach ($characters as $char) {
@@ -210,11 +220,11 @@ class CombatService
         }
         foreach ($enemies as $enemy) {
             if ($enemy['health'] > 0) {
-                $all[1][] = $char;
+                $all[1][] = $enemy;
             }
         }
         $turn = json_decode($combat['turn_order'])[$combat['turn']];
-        //var_dump($all);
+        // var_dump($all);
         $enemy = $enemies[$turn - count($characters) - 1];
         $spell = $repo->getEnemySpells($enemy['enemy_id'])[0];
         var_dump($spell);

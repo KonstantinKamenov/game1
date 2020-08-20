@@ -3,8 +3,8 @@
 </head>
 <body>
 <?php 
-    if(isset($_POST['reg_msg'])){
-    	echo $_POST['reg_msg'];
+    if(isset($reg_msg)){
+    	echo $reg_msg;
     }
 ?>
 <form method="post" action="index.php?target=Home&action=register">
@@ -13,8 +13,8 @@ password:<input type="password" id="password" name="password"><br>
 <input type="submit" value="Register"><br>
 </form>
 <?php 
-    if(isset($_POST['log_msg'])){
-    	echo $_POST['log_msg'];
+    if(isset($log_msg)){
+    	echo $log_msg;
     }
 ?>
 <form method="post" action="index.php?target=Home&action=login">

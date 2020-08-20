@@ -62,11 +62,11 @@
     		if(turn.side=="friendly"){
         		for(var i=0;i<spells.length;i++){
     				//console.log(enemies[i].enemy_id);
-    				$("#turn").append("<td onclick='changeSelectedSpell("+(i+1)+")'class='selector spell_selector'>"+spells[i].name+"</td>");
+    				$("#turn").append("<tr><td onclick='changeSelectedSpell("+(i+1)+")'class='selector spell_selector'>"+spells[i].name+"</td></tr>");
     			}
 			}else{
 				//enemyTurn();
-				$("#turn").append("<td class='selector spell_selector'></td>");
+				$("#turn").append("<tr><td class='selector spell_selector'></td></tr>");
 				sleep(1000).then(() => { enemyTurn(); });
 			}
     		//console.log(turn);
@@ -103,11 +103,9 @@
     </script>
 </head>
 <body>
-	<table>
-	<tr id='turn'>
-	</tr>
+	<table id='turn' style="float: left; padding: 5px;">
 	</table>
-	<table>
+	<table style="float: left; padding: 5px;">
 		<tr>
 			<td onclick='cast(0,0,0)' class='field friendly_field'></td>
 			<td onclick='cast(1,0,0)' class='field friendly_field'></td>
@@ -144,8 +142,7 @@
 			<td onclick='cast(4,4,0)' class='field friendly_field'></td>
 		</tr>
 	</table>
-	<br />
-	<table>
+	<table style="float: left; padding: 5px;">
 		<tr>
 			<td onclick='cast(0,0,1)' class='field enemy_field'></td>
 			<td onclick='cast(1,0,1)' class='field enemy_field'></td>

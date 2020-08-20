@@ -15,7 +15,7 @@ class CharacterCreateController
         
         $name=$_POST['name'];
         $class=$_POST['class'];
-        $user_id=$_COOKIE['user_id'];
+        $user_id=$_SESSION['user_id'];
         
         if($name==""){
             $_POST['create_msg']="Name cannot be empty";

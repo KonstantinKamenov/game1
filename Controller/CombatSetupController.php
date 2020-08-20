@@ -9,17 +9,17 @@ class CombatSetupController
 {
     public function home()
     {
-        echo require("View/CombatSetupView.html");
+        require("View/CombatSetupView.html");
     }
     public function loadEnemies(){
         $service = new EnemyService();
-        $result = $service->getEnemies();
+        $result = $service->getEnemies($_SESSION['zone_id']);
         //var_dump($result);
         echo json_encode($result);
     }
     public function loadCharacters(){
         $service = new CharacterService();
-        $result = $service->getCharacters($_COOKIE['user_id']);
+        $result = $service->getCharacters($_SESSION['user_id']);
         echo json_encode($result);
     }
 }

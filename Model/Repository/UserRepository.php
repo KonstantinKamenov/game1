@@ -11,7 +11,7 @@ class UserRepository{
         $statement = $conn->prepare($query);
         $statement->execute(['name'=>$name]);
         
-        $result = $statement->fetchAll();
+        $result = $statement->fetch();
         return $result;
     }
     public function insertUser($username,$password){
@@ -23,4 +23,18 @@ class UserRepository{
         $stmt = $conn->prepare($query);
         return $stmt->execute(['username'=>$username,'password'=>$password]);
     }
+    public function changeLocation($zone_id,$user_id){
+        $conn = DBManager::getInstance()->getConnection();
+        
+        $query = 'UPDATE `users`
+                SET `current_zone` = :zone_id
+                WHERE `user_id` = :user_id';
+        
+        $stmt = $conn->prepare($query);
+        return $stmt->execute([
+            'zone_id' => $zone_id,
+            'user_id' => $user_id
+        ]);
+    }
+    
 }

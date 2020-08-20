@@ -18,22 +18,24 @@ class HomeController
         $username = $_POST['username'];
         $password = $_POST['password'];
         if ($username == '') {
-            $_POST['reg_msg'] = "username cannot be empty";
+            $reg_msg = "username cannot be empty";
+            
             require ("View/HomeView.php");
             return;
         }
         if ($password == '') {
-            $_POST['reg_msg'] = "password cannot be empty";
+            $reg_msg = "password cannot be empty";
             require ("View/HomeView.php");
             return;
         }
 
         $result = $service->registerUser($username, password_hash($password, PASSWORD_DEFAULT));
         if ($result['success']) {
-            setcookie('user_id', $result['user']['user_id']);
+            $_SESSION['user_id'] = $result['user']['user_id'];
+            $_SESSION['zone_id'] = $result['user']['current_zone'];
             require ("View/CombatSetupView.html");
         } else {
-            $_POST['reg_msg'] = "username already taken";
+            $reg_msg = "username already taken";
             require ("View/HomeView.php");
         }
     }
@@ -47,10 +49,11 @@ class HomeController
 
         $result = $service->checkUser($username, $password);
         if ($result['success']) {
-            setcookie('user_id', $result['user']['user_id']);
+            $_SESSION['user_id'] = $result['user']['user_id'];
+            $_SESSION['zone_id'] = $result['user']['current_zone'];
             require ("View/CombatSetupView.html");
         } else {
-            $_POST['log_msg'] = "username/password don't match";
+            $log_msg = "username/password don't match";
             require ("View/HomeView.php");
         }
     }

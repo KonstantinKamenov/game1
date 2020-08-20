@@ -15,7 +15,7 @@ class CharacterRepository
             'class' => $class
         ]);
 
-        $result = $statement->fetchAll();
+        $result = $statement->fetch();
         return $result;
     }
 
@@ -47,7 +47,7 @@ class CharacterRepository
             'name' => $name
         ]);
 
-        $result = $statement->fetchAll();
+        $result = $statement->fetch();
         return $result;
     }
 
@@ -62,13 +62,13 @@ class CharacterRepository
             'character_id' => $character_id
         ]);
 
-        $result = $statement->fetchAll();
+        $result = $statement->fetch();
         return $result;
     }
 
     public function addCharacter($user_id, $name, $class)
     {
-        $template = $this->getClass($class)[0];
+        $template = $this->getClass($class);
 
         $conn = DBManager::getInstance()->getConnection();
 

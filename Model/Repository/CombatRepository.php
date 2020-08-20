@@ -48,7 +48,7 @@ class CombatRepository
             'user_id' => $user_id
         ]);
 
-        $result = $statement->fetchAll();
+        $result = $statement->fetch();
         return $result;
     }
 
@@ -62,7 +62,6 @@ class CombatRepository
         $statement->execute([
             'user_id' => $user_id
         ]);
-        return;
     }
 
     public function getClassSpells($class)

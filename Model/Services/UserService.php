@@ -18,7 +18,7 @@ class UserService
         if ($repo->insertUser($username, $password)) {
             $result['success'] = true;
         }
-        $result['user'] = $repo->getUserByName($username)[0];
+        $result['user'] = $repo->getUserByName($username);
         return $result;
     }
 
@@ -29,11 +29,11 @@ class UserService
         ];
         $repo = new UserRepository();
         $user = $repo->getUserByName($username);
-        if (! $user || ! password_verify($password, $user[0]['password'])) {
+        if (! $user || ! password_verify($password, $user['password'])) {
             return $result;
         }
         $result['success'] = true;
-        $result['user'] = $user[0];
+        $result['user'] = $user;
         return $result;
     }
 }

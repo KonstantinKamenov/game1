@@ -10,14 +10,14 @@
 				enemies=JSON.parse(data).enemies;
 				for(var i=0;i<enemies.length;i++){
 					console.log(enemies[i].enemy_id);
-					$("#enemy_list").append("<td onclick='changeCurrentlySelectedEnemy("+(i+1)+")' class='selector enemy_selector'>"+enemies[i].name+"</td>");
+					$("#enemy_list").append("<tr><td onclick='changeCurrentlySelectedEnemy("+(i+1)+")' class='selector enemy_selector'>"+enemies[i].name+"</td></tr>");
 				}
 			});
 			$.get("index.php/?target=CombatSetup&action=loadCharacters",function(data){
 				characters=JSON.parse(data).characters;
 				for(var i=0;i<characters.length;i++){
 					//console.log(enemies[i].enemy_id);
-					$("#character_list").append("<td onclick='changeCurrentlySelectedCharacter("+(i+1)+")' class='selector friendly_selector'>"+characters[i].name+"</td>");
+					$("#character_list").append("<tr><td onclick='changeCurrentlySelectedCharacter("+(i+1)+")' class='selector friendly_selector'>"+characters[i].name+"</td></tr>");
 				}
 			});
 		});
@@ -83,14 +83,27 @@
     </script>
 </head>
 <body>
-	<a href="index.php?target=CharacterCreate&action=home"><input type="button"
-		value="Create new character" /></a>
 	<table>
-		<tr id='character_list'>
-
+		<tr>
+			<td class='selector selector_selected'><a
+				href="index.php?target=CombatSetup&action=home">Battle</a></td>
+			<td class='selector'><a href="index.php?target=Map&action=load">Map</a>
+			</td>
 		</tr>
 	</table>
-	<table>
+	<a href="index.php?target=CharacterCreate&action=home"
+		style="display: block"><input type="button"
+		value="Create new character" /></a>
+	<br />
+	<form name="form" action="index.php?target=Combat&action=initCombat"
+		method="POST" onsubmit="makeSetup()">
+		<input type="text" id="setup_char" name="characters" hidden="true">
+		<input type="text" id="setup_enemy" name="enemies" hidden="true">
+		<input type="submit" value="Fight">
+	</form>
+	<table id='character_list' style="float: left; padding: 5px;">
+	</table>
+	<table style="float: left; padding: 5px;">
 		<tr>
 			<td onclick='placeCharacter(0,0)' class='field friendly_field'></td>
 			<td onclick='placeCharacter(1,0)' class='field friendly_field'></td>
@@ -127,8 +140,7 @@
 			<td onclick='placeCharacter(4,4)' class='field friendly_field'></td>
 		</tr>
 	</table>
-	<br />
-	<table>
+	<table style="float: left; padding: 5px; display: block;">
 		<tr>
 			<td onclick='placeEnemy(0,0)' class='field enemy_field'></td>
 			<td onclick='placeEnemy(1,0)' class='field enemy_field'></td>
@@ -165,17 +177,13 @@
 			<td onclick='placeEnemy(4,4)' class='field enemy_field'></td>
 		</tr>
 	</table>
-	<table>
-		<tr id='enemy_list'>
+	<table id='enemy_list'
+		style="float: left; padding: 5px; display: block; postiton: relative; top: 5px">
+		<tr>
 			<td onclick='changeCurrentlySelectedEnemy(0)'
 				class='selector_selected enemy_selector'></td>
 		</tr>
 	</table>
-	<form name="form" action="index.php?target=Combat&action=initCombat"
-		method="POST" onsubmit="makeSetup()">
-		<input type="text" id="setup_char" name="characters" hidden="true">
-		<input type="text" id="setup_enemy" name="enemies" hidden="true">
-		<input type="submit" value="Fight">
-	</form>
+
 </body>
 </html>
