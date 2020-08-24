@@ -16,17 +16,15 @@ class EnemyRepository
         return $result;
     }
 
-    public function getEnemiesByZone($zone_id)
+    public function getLoot($enemy_id)
     {
         $conn = DBManager::getInstance()->getConnection();
         $query = 'SELECT *
-                    FROM `zone_enemy_map`
-                    JOIN `enemies`
-                    ON `zone_enemy_map`.enemy_id = `enemies`.enemy_id
-                    WHERE `zone_id` = :zone_id';
+                    FROM `loot_table`
+                    WHERE `enemy_id` = :enemy_id';
         $statement = $conn->prepare($query);
         $statement->execute([
-            'zone_id' => $zone_id
+            'enemy_id' => $enemy_id
         ]);
 
         $result = $statement->fetchAll();
@@ -47,4 +45,22 @@ class EnemyRepository
         $result = $statement->fetch();
         return $result;
     }
+    
+    public function getEnemiesByZone($zone_id)
+    {
+        $conn = DBManager::getInstance()->getConnection();
+        $query = 'SELECT *
+                    FROM `zone_enemy_map`
+                    JOIN `enemies`
+                    ON `zone_enemy_map`.enemy_id = `enemies`.enemy_id
+                    WHERE `zone_id` = :zone_id';
+        $statement = $conn->prepare($query);
+        $statement->execute([
+            'zone_id' => $zone_id
+        ]);
+        
+        $result = $statement->fetchAll();
+        return $result;
+    }
+    
 }

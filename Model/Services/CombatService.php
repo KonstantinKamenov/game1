@@ -18,6 +18,8 @@ class CombatService
 
     const TARGET_TYPE_FRIENDLY_FREE = "free_friendly";
 
+    const TARGET_TYPE_FRIENDLY = "friendly";
+
     public function initCombat($characters, $enemies)
     {
         $characterField = json_decode($characters);
@@ -118,6 +120,11 @@ class CombatService
         if (count($enemies) - $deadEnemies == 0) {
             $turn['success'] = true;
             $turn['outcome'] = "victory";
+            foreach ($enemies as $enemy) {
+                $enemyService = new EnemyService();
+                $enemyService->dropGold($enemy['enemy_id'], $_SESSION['user_id']);
+                $enemyService->dropItems($enemy['enemy_id'], $_SESSION['user_id']);
+            }
             return $turn;
         }
         if (count($characters) - $deadChar == 0) {
@@ -147,7 +154,7 @@ class CombatService
         $turn['success'] = true;
         return $turn;
     }
-
+    
     public function resolveSpell($x, $y, $field, $side, $spell_id)
     {
         $result = [
@@ -155,6 +162,10 @@ class CombatService
         ];
         $repo = new CombatRepository();
         $spell = $repo->getSpellByID($spell_id);
+        $attributes = $repo->getAttributes($spell['spell_id']);
+        foreach ($attributes as $attr) {
+            $spell[$attr['attribute_name']] = $attr['attribute_value'];
+        }
         $combat = $repo->getCombatByUserID($_SESSION['user_id']);
         $all[0] = json_decode($combat['characters'], true);
         $all[1] = json_decode($combat['enemies'], true);
@@ -181,22 +192,65 @@ class CombatService
                 return $result;
             }
         }
+        if ($spell['target_type'] == self::TARGET_TYPE_FRIENDLY) {
+            if ($field != $side || $placement[$field][$x][$y] == 0) {
+                return $result;
+            }
+        }
         if ($spell['target_type'] == self::TARGET_TYPE_FRIENDLY_FREE) {
             if ($field != $side || $placement[$field][$x][$y] != 0) {
                 return $result;
             }
         }
-        if ($spell['spell_type']== 'movement') {
+        if ($spell['spell_type'] == 'movement') {
             $all[$side][$turn - 1]['x'] = ($x + 0);
             $all[$side][$turn - 1]['y'] = ($y + 0);
         }
-        if ($spell['spell_type']== 'damage') {
+        if ($spell['spell_type'] == 'damage') {
             $all[$field][$placement[$field][$x][$y] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
         }
         if ($spell['spell_type'] == 'damage_row') {
             for ($ty = 0; $ty < self::MAX_HEIGHT; $ty ++) {
                 if ($placement[$field][$x][$ty] != 0) {
                     $all[$field][$placement[$field][$x][$ty] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
+                }
+            }
+        }
+        if ($spell['spell_type'] == 'healing') {
+            $all[$field][$placement[$field][$x][$y] - 1]['health'] += $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
+        }
+        if ($spell['spell_type'] == 'damage_piercing') {
+            $loss = $spell['dmg_loss'];
+            $hit = 0;
+            for ($tx = 0; $tx < self::MAX_WIDTH; $tx ++) {
+                if ($placement[$field][$tx][$y] != 0) {
+                    $all[$field][$placement[$field][$tx][$y] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] * (1 - $loss * $hit) + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'] * (1 - $loss * $hit);
+                    $hit ++;
+                }
+            }
+        }
+
+        if ($spell['spell_type'] == 'damage_area_square') {
+            $area = $spell['dmg_area'];
+            for ($tx = max(0, $x - $area); $tx <= min(self::MAX_WIDTH - 1, $x + $area); $tx ++) {
+                for ($ty = max(0, $y - $area); $ty <= min(self::MAX_HEIGHT - 1, $y + $area); $ty ++) {
+                    if ($placement[$field][$tx][$ty] != 0) {
+                        $all[$field][$placement[$field][$tx][$ty] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'];
+                    }
+                }
+            }
+        }
+        if ($spell['spell_type'] == 'damage_area_reduced') {
+            $area = $spell['dmg_area'];
+            $loss = $spell['dmg_loss'];
+            for ($tx = 0; $tx < self::MAX_WIDTH; $tx ++) {
+                for ($ty = 0; $ty <= self::MAX_HEIGHT; $ty ++) {
+                    $dist = abs($tx - $x) + abs($ty - $y);
+                    if ($dist > $area)
+                        continue;
+                    if ($placement[$field][$tx][$ty] != 0) {
+                        $all[$field][$placement[$field][$tx][$ty] - 1]['health'] -= $spell['attack_scale'] * $all[$side][$turn - 1]['attack'] * (1 - $loss * $dist) + $spell['magic_scale'] * $all[$side][$turn - 1]['magic_attack'] * (1 - $loss * $dist);
+                    }
                 }
             }
         }

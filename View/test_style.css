@@ -17,3 +17,17 @@
 	border: 1px solid black;
 	border-collapse: collapse;
 }
+.inv {
+	width: 64px;
+	height: 64px;
+	text-align: center;
+	border: 1px solid black;
+	border-collapse: collapse;
+}
+.inv_selected {
+	width: 64px;
+	height: 64px;
+	text-align: center;
+	border: 2px solid black;
+	border-collapse: collapse;
+}

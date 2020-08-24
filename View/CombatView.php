@@ -33,7 +33,7 @@
 		for(var i=0;i<characters.length;i++){
 			console.log(characters[i].y*5+characters[i].x);
 			if(characters[i].health>0){
-				fields[characters[i].y*5+characters[i].x].innerHTML=characters[i].name+"<br/>"+"("+characters[i].class+")"+"<br\>"+characters[i].health;
+				fields[characters[i].y*5+characters[i].x].innerHTML=characters[i].name+"<br/>"+"("+characters[i].class+")"+"<br\>"+Math.round(characters[i].health);
 			}
 		}
 	}
@@ -44,13 +44,13 @@
 		}
 		for(var i=0;i<enemies.length;i++){
 			if(enemies[i].health>0){
-				fields[enemies[i].y*5+enemies[i].x].innerHTML=enemies[i].name+"<br\>"+enemies[i].health;
+				fields[enemies[i].y*5+enemies[i].x].innerHTML=enemies[i].name+"<br\>"+Math.round(enemies[i].health);
 			}
 		}
 	}
 	function loadTurn(){
 		$.get("index.php/?target=Combat&action=getTurn",function(data){
-    		//console.log(data);
+    		console.log(data);
     		selectedSpell=0;
     		turn=JSON.parse(data);
     		console.log(turn);

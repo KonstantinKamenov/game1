@@ -114,16 +114,29 @@ class CombatRepository
         return $result;
     }
     public function changeTurn($user_id,$turn){
+            $conn = DBManager::getInstance()->getConnection();
+            
+            $query = 'UPDATE `combats`
+                    SET `turn` = :turn
+                    WHERE `user_id` = :user_id';
+            
+            $stmt = $conn->prepare($query);
+            return $stmt->execute([
+                'user_id' => $user_id,
+                'turn' => $turn
+            ]);
+    }
+    public function getAttributes($spell_id){
         $conn = DBManager::getInstance()->getConnection();
-        
-        $query = 'UPDATE `combats`
-                SET `turn` = :turn
-                WHERE `user_id` = :user_id';
-        
-        $stmt = $conn->prepare($query);
-        return $stmt->execute([
-            'user_id' => $user_id,
-            'turn' => $turn
+        $query = 'SELECT *
+                    FROM `spell_attributes`
+                    WHERE `spell_id` = :spell_id';
+        $statement = $conn->prepare($query);
+        $statement->execute([
+            'spell_id' => $spell_id
         ]);
+        
+        $result = $statement->fetchAll();
+        return $result;
     }
 }

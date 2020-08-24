@@ -40,8 +40,12 @@
 		<tr>
 			<td class='selector'><a
 				href="index.php?target=CombatSetup&action=home">Battle</a></td>
-			<td class='selector selector_selected'><a
-				href="index.php?target=Map&action=load">Map</a></td>
+			<td class='selector selector_selected'><a href="index.php?target=Map&action=load">Map</a>
+			</td>
+			<td class='selector'><a
+				href="index.php?target=Inventory&action=load">Inventory</a></td>
+				<td class='selector'><a
+				href="index.php?target=Shop&action=load">Shop</a></td>
 		</tr>
 	</table>
 	<table>
