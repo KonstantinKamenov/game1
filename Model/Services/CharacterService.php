@@ -1,29 +1,97 @@
 <?php
-
 namespace Model\Services;
 
 use Model\Repository\CharacterRepository;
+use Model\Repository\InventoryRepository;
 
-class CharacterService{
-    
-    public function getCharacters($user_id){
+class CharacterService
+{
+
+    const ARMOR_SLOTS = array(
+        "helm",
+        "chest",
+        "weapon"
+    );
+
+    public function getCharacters($user_id)
+    {
         $repo = new CharacterRepository();
         $characters = $repo->getCharactersByUserID($user_id);
-        $result['characters']=$characters;
+        $result['characters'] = $characters;
         return $result;
     }
-    
-    public function addCharacter($user_id,$name,$class){
-        $result = ['success' => false];
+
+    public function getCharacter($character_id)
+    {
         $repo = new CharacterRepository();
-        if($repo->getCharacter($user_id,$name)){
+        $result = $repo->getCharacterByID($character_id);
+        return $result;
+    }
+
+    public function addCharacter($user_id, $name, $class)
+    {
+        $result = [
+            'success' => false
+        ];
+        $repo = new CharacterRepository();
+        if ($repo->getCharacter($user_id, $name)) {
             return $result;
         }
-        if($repo->addCharacter($user_id,$name,$class)){
-            $result['success']=true;
+        if ($repo->addCharacter($user_id, $name, $class)) {
+            $result['success'] = true;
         }
-        $result['character']=$repo->getCharacter($user_id,$name);
+        $result['character'] = $repo->getCharacter($user_id, $name);
+        return $result;
+    }
+
+    public function evaluateCharacter($character_id)
+    {
+        $charRepo = new CharacterRepository();
+        $invRepo = new InventoryRepository();
+        $character = $charRepo->getCharacterByID($character_id);
+        foreach (self::ARMOR_SLOTS as $slot) {
+            if ($character[$slot] != 0) {
+                $armor = $invRepo->getArmor($character[$slot]);
+                $character['health'] += $armor['health'];
+                $character['attack'] += $armor['attack'];
+                $character['magic_attack'] += $armor['magic_attack'];
+                $character['movement_speed'] += $armor['speed'];
+            }
+        }
+        return $character;
+    }
+
+    public function getArmor($character_id)
+    {
+        $character = $this->getCharacter($character_id);
+        $invRepo = new InventoryRepository();
+        foreach (CharacterService::ARMOR_SLOTS as $slot) {
+            $result[$slot] = $invRepo->getArmor($character[$slot]);
+        }
         return $result;
     }
     
+    public function unequipItem($character_id, $slot){
+        $character = $this->getCharacter($character_id);
+        if($character[$slot]==0)return;
+        $item_id = $character[$slot];
+        $user_id = $_SESSION['user_id'];
+        $invRepo = new InventoryRepository();
+        $invRepo->changeArmor($character_id, $slot, 0);
+        $item = $invRepo->getItemCount($user_id, $item_id);
+        if(!$item){
+            $invRepo->insertItem($user_id, $item_id);
+            $item = $invRepo->getItemCount($user_id, $item_id);
+        }
+        $invRepo->changeItemCount($user_id, $item_id, $item['quantity']+1);
+    }
+    public function equipItem($character_id, $slot, $item_id){
+        $user_id = $_SESSION['user_id'];
+        $invRepo = new InventoryRepository();
+        $armor = $invRepo->getArmor($item_id);
+        if(!$armor || $armor['slot']!=$slot)return;
+        $invRepo->changeArmor($character_id, $slot, $item_id);
+        $item = $invRepo->getItemCount($user_id, $item_id);
+        $invRepo->changeItemCount($user_id, $item_id, $item['quantity']-1);
+    }
 }

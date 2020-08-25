@@ -24,13 +24,14 @@ class CombatService
     {
         $characterField = json_decode($characters);
         $enemyField = json_decode($enemies);
-        $characterRepo = new CharacterRepository();
+        //$characterRepo = new CharacterRepository();
+        $charService = new CharacterService();
         $enemyRepo = new EnemyRepository();
         $cnt = 0;
         for ($y = 0; $y < self::MAX_HEIGHT; $y ++) {
             for ($x = 0; $x < self::MAX_WIDTH; $x ++) {
                 if ($characterField[$x][$y] != 0) {
-                    $loadedCharacters[$cnt] = $characterRepo->getCharacterByID($characterField[$x][$y]);
+                    $loadedCharacters[$cnt] = $charService->evaluateCharacter($characterField[$x][$y]);
                     $loadedCharacters[$cnt]['x'] = $x;
                     $loadedCharacters[$cnt]['y'] = $y;
                     $loadedCharacters[$cnt]['id'] = $cnt + 1;

@@ -115,4 +115,48 @@ class InventoryRepository
             'gold' => $gold
         ]);
     }
+    
+    public function getArmor($item_id){
+        $conn = DBManager::getInstance()->getConnection();
+        $query = 'SELECT *
+                    FROM `armor`
+                    JOIN `items`
+                    ON `armor`.item_id = `items`.item_id
+                    WHERE `items`.`item_id` = :item_id';
+        $statement = $conn->prepare($query);
+        $statement->execute([
+            'item_id' => $item_id
+        ]);
+        
+        $result = $statement->fetch();
+        
+        return $result;
+    }
+    
+    public function changeArmor($character_id, $slot, $item_id){
+        $conn = DBManager::getInstance()->getConnection();
+        switch($slot){
+            case "helm":
+                $query = 'UPDATE `characters`
+                SET `helm` = :item_id
+                WHERE `character_id` = :character_id';
+                break;
+            case "chest":
+                $query = 'UPDATE `characters`
+                SET `chest` = :item_id
+                WHERE `character_id` = :character_id';
+                break;
+            case "weapon":
+                $query = 'UPDATE `characters`
+                SET `weapon` = :item_id
+                WHERE `character_id` = :character_id';
+                break;
+        }
+        
+        $stmt = $conn->prepare($query);
+        return $stmt->execute([
+            'item_id' => $item_id,
+            'character_id' => $character_id
+        ]);
+    }
 }

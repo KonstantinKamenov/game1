@@ -112,6 +112,7 @@
 			<td class='selector'><a href="index.php?target=Inventory&action=load">Inventory</a></td>
 			<td class='selector selector_selected'><a
 				href="index.php?target=Shop&action=load">Shop</a></td>
+			<td class='selector'><a href="index.php?target=Crafting&action=load">Crafting</a></td>
 		</tr>
 	</table>
 	<div id='gold'></div>
