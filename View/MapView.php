@@ -45,6 +45,7 @@
 			<td class='selector'><a href="index.php?target=Inventory&action=load">Inventory</a></td>
 			<td class='selector'><a href="index.php?target=Shop&action=load">Shop</a></td>
 			<td class='selector'><a href="index.php?target=Crafting&action=load">Crafting</a></td>
+			<td class='selector'><a href="index.php?target=Talents&action=load">Talents</a></td>
 		</tr>
 	</table>
 	<table>

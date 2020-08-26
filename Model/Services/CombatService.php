@@ -173,6 +173,8 @@ class CombatService
         $placement[0] = array_fill(0, self::MAX_HEIGHT, array_fill(0, self::MAX_WIDTH, 0));
         $placement[1] = array_fill(0, self::MAX_HEIGHT, array_fill(0, self::MAX_WIDTH, 0));
         $turn = json_decode($combat['turn_order'])[$combat['turn']];
+
+        
         if ($turn > count($all[0])) {
             $turn -= count($all[0]);
         }

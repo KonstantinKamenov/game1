@@ -7,11 +7,18 @@ use Model\Repository\InventoryRepository;
 class CharacterService
 {
 
-    const ARMOR_SLOTS = array(
+    const ARMOR_SLOTS = [
         "helm",
         "chest",
-        "weapon"
-    );
+       "weapon"
+    ];
+    const CLASSES = [
+        "Mage" => 1,
+        "Warrior" => 2,
+        "Marksman" => 3,
+        "Priest" => 4,
+        "Rogue" => 5
+    ];
 
     public function getCharacters($user_id)
     {
@@ -58,6 +65,11 @@ class CharacterService
                 $character['movement_speed'] += $armor['speed'];
             }
         }
+        $talentService = new TalentService();
+        $talents = $talentService->getTalentRanks($character_id);
+        $character['attack']+=$talents['attack boost']*8;
+        $character['magic_attack']+=$talents['magic boost']*8;
+        $character['health']+=$talents['health boost']*25;
         return $character;
     }
 

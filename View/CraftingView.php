@@ -70,12 +70,13 @@
 			<td class='selector'><a href="index.php?target=Shop&action=load">Shop</a></td>
 			<td class='selector  selector_selected'><a
 				href="index.php?target=Crafting&action=load">Crafting</a></td>
+			<td class='selector'><a href="index.php?target=Talents&action=load">Talents</a></td>
 		</tr>
 	</table>
 	<table id='recipes'>
 	</table>
 	<button onclick='craftItem()'>craft</button>
-	<br/>
+	<br />
 	<table id='inventory'>
 	</table>
 </body>
