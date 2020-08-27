@@ -45,6 +45,10 @@
 			console.log(data);
 			talents=JSON.parse(data);
 			var talentSpots=document.getElementsByClassName("talents");
+			for(var i=0;i<talentSpots.length;i++){
+				talentSpots[i].innerHTML="";
+				talentSpots[i].setAttribute('onClick', '');
+			}
 			console.log(talents);
 			for(var i=0;i<talents.length;i++){
 				talentSpots[talents[i].disp_y*4+talents[i].disp_x*1].innerHTML=talents[i].name+"</br>"+talents[i].rank+"/"+talents[i].max_rank;

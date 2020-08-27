@@ -54,6 +54,9 @@ class TalentService
         if($talentLevels[$talent]<$talents[$talent]['max_rank']){
             $talentLevels[$talent]++;
         }
+        if($talents[$talent]['requirement']!=0 && $talentLevels[$talents[$talent]['requirement']]<$talents[$talents[$talent]['requirement']]['max_rank']){
+            return;
+        }
         $talentLevels = implode(', ', $talentLevels);
         $talentRepo->setTalents($character_id, $talentLevels);
     }

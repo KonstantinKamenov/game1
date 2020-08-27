@@ -14,10 +14,10 @@ class CharacterService
     ];
     const CLASSES = [
         "Mage" => 1,
-        "Warrior" => 2,
-        "Marksman" => 3,
-        "Priest" => 4,
-        "Rogue" => 5
+        "Warrior" => 3,
+        "Marksman" => 5,
+        "Priest" => 6,
+        "Rogue" => 7
     ];
 
     public function getCharacters($user_id)
